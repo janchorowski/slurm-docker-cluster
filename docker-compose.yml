@@ -156,10 +156,40 @@ services:
 
 volumes:
   etc_munge:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/etc_munge
+      o: bind
+
   etc_slurm:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/etc_slurm
+      o: bind
+
   slurm_jobdir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/data
+      o: bind
+
   var_lib_mysql:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/var_lib_mysql
+      o: bind
+
   var_log_slurm:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/var_log_slurm
+      o: bind
+
 
 networks:
   slurm-network:
