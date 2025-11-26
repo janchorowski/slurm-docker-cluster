@@ -153,15 +153,61 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+  
+  c3:
+    image: slurm-docker-cluster:${SLURM_VERSION:-25.05.3}
+    command: ["slurmd"]
+    container_name: c3
+    hostname: c3
+    working_dir: /data
+    privileged: true
+    volumes:
+      - etc_munge:/etc/munge
+      - etc_slurm:/etc/slurm
+      - slurm_jobdir:/data
+      - var_log_slurm:/var/log/slurm
+    expose:
+      - "6818"
+    depends_on:
+      slurmctld:
+        condition: service_healthy
+    networks:
+      - slurm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pidof slurmd"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  c4:
+    image: slurm-docker-cluster:${SLURM_VERSION:-25.05.3}
+    command: ["slurmd"]
+    container_name: c4
+    hostname: c4
+    working_dir: /data
+    privileged: true
+    volumes:
+      - etc_munge:/etc/munge
+      - etc_slurm:/etc/slurm
+      - slurm_jobdir:/data
+      - var_log_slurm:/var/log/slurm
+    expose:
+      - "6818"
+    depends_on:
+      slurmctld:
+        condition: service_healthy
+    networks:
+      - slurm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pidof slurmd"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
 volumes:
   etc_munge:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${PWD}/volumes/etc_munge
-      o: bind
-
   etc_slurm:
     driver: local
     driver_opts:
@@ -175,14 +221,7 @@ volumes:
       type: none
       device: ${PWD}/volumes/data
       o: bind
-
   var_lib_mysql:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${PWD}/volumes/var_lib_mysql
-      o: bind
-
   var_log_slurm:
     driver: local
     driver_opts:

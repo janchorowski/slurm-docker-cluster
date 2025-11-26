@@ -2,7 +2,7 @@
 # Stage 1: Build RPMs using the builder image
 # Stage 2: Install RPMs in a clean runtime image
 
-ARG SLURM_VERSION
+ARG SLURM_VERSION="25.05.3"
 
 # ============================================================================
 # Stage 1: Build RPMs
@@ -183,31 +183,6 @@ RUN set -x \
         /var/log/slurm \
         /etc/slurm
 
-# Copy Slurm configuration files
-# Version-specific configs: Extract major.minor from SLURM_VERSION (e.g., "24.11" from "24.11.6")
-COPY config/ /tmp/slurm-config/
-RUN set -ex \
-    && MAJOR_MINOR=$(echo ${SLURM_VERSION} | cut -d. -f1,2) \
-    && echo "Detected Slurm version: ${MAJOR_MINOR}" \
-    && if [ -f "/tmp/slurm-config/${MAJOR_MINOR}/slurm.conf" ]; then \
-         echo "Using version-specific config for ${MAJOR_MINOR}"; \
-         cp /tmp/slurm-config/${MAJOR_MINOR}/slurm.conf /etc/slurm/slurm.conf; \
-       else \
-         echo "No version-specific config found for ${MAJOR_MINOR}, using latest (25.05)"; \
-         cp /tmp/slurm-config/25.05/slurm.conf /etc/slurm/slurm.conf; \
-       fi \
-    && cp /tmp/slurm-config/common/slurmdbd.conf /etc/slurm/slurmdbd.conf \
-    && if [ -f "/tmp/slurm-config/${MAJOR_MINOR}/cgroup.conf" ]; then \
-         echo "Using version-specific cgroup.conf for ${MAJOR_MINOR}"; \
-         cp /tmp/slurm-config/${MAJOR_MINOR}/cgroup.conf /etc/slurm/cgroup.conf; \
-       else \
-         echo "Using common cgroup.conf"; \
-         cp /tmp/slurm-config/common/cgroup.conf /etc/slurm/cgroup.conf; \
-       fi \
-    && chown slurm:slurm /etc/slurm/slurm.conf /etc/slurm/cgroup.conf /etc/slurm/slurmdbd.conf \
-    && chmod 644 /etc/slurm/slurm.conf /etc/slurm/cgroup.conf \
-    && chmod 600 /etc/slurm/slurmdbd.conf \
-    && rm -rf /tmp/slurm-config
 COPY --chown=slurm:slurm --chmod=0600 examples /root/examples
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
