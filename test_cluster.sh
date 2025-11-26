@@ -140,7 +140,7 @@ test_compute_nodes() {
 
     # Count running worker nodes
     EXPECTED_COUNT=0
-    for node_service in c1 c2; do
+    for node_service in c1 c2 c3 c4; do
         if docker compose ps "$node_service" 2>/dev/null | grep -q "Up"; then
             EXPECTED_COUNT=$((EXPECTED_COUNT + 1))
         fi
@@ -183,7 +183,7 @@ test_job_submission() {
     print_test "Testing job submission..."
 
     # Submit a simple job
-    JOB_ID=$(docker exec slurmctld bash -c "cd /data && sbatch --wrap='hostname' 2>&1" | sed -n 's/.*Submitted batch job \([0-9][0-9]*\).*/\1/p')
+    JOB_ID=$(docker exec slurmctld bash -c "mkdir -p /data/tests && cd /data/tests && sbatch --wrap='hostname' 2>&1" | sed -n 's/.*Submitted batch job \([0-9][0-9]*\).*/\1/p')
 
     if [ -n "$JOB_ID" ]; then
         print_info "  Job ID: $JOB_ID submitted"
@@ -208,7 +208,7 @@ test_job_execution() {
     print_test "Testing job execution and output..."
 
     # Submit a job and wait for it
-    OUTPUT=$(docker exec slurmctld bash -c "cd /data && sbatch --wrap='echo SUCCESS_TEST_\$SLURM_JOB_ID' --wait 2>&1 && sleep 2 && cat slurm-*.out | grep SUCCESS_TEST" 2>/dev/null || echo "")
+    OUTPUT=$(docker exec slurmctld bash -c "mkdir -p /data/tests && cd /data/tests && sbatch --wrap='echo SUCCESS_TEST_\$SLURM_JOB_ID' --wait 2>&1 && sleep 2 && cat slurm-*.out | grep SUCCESS_TEST" 2>/dev/null || echo "")
 
     if echo "$OUTPUT" | grep -q "SUCCESS_TEST"; then
         print_pass "Job executed and produced output"

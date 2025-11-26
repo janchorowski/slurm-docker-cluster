@@ -183,8 +183,6 @@ RUN set -x \
         /var/log/slurm \
         /etc/slurm
 
-COPY --chown=slurm:slurm --chmod=0600 examples /root/examples
-
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
