@@ -63,6 +63,9 @@ status:  ## Show cluster status
 	@echo ""
 	@echo "=== Cluster ==="
 	@docker exec slurmctld sinfo 2>/dev/null || echo "Not ready"
+	@echo ""
+	@echo "=== Cluster queue ==="
+	@docker exec slurmctld squeue 2>/dev/null || echo "Not ready"
 
 shell:  ## Open shell in slurmctld
 	docker exec -it slurmctld bash
