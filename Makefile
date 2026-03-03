@@ -42,7 +42,7 @@ build:  ## Build Docker images
 	docker compose --progress plain build
 
 up:  ## Start containers
-	chmod -R go+rwX  volumes > /dev/null  ## fix errors on NFS which may forbid file creation from containers
+	chmod -R go+rwX  volumes > /dev/null | true  ## fix errors on NFS which may forbid file creation from containers
 	docker compose up -d
 
 down:  ## Stop containers
